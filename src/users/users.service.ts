@@ -21,12 +21,15 @@ export class UsersService {
       const cloudinary = await this.fileUploadService.uploadStream(file);
       update.image = cloudinary.secure_url;
     }
-    const response = await axios.put(`${USER_URL}/users`, update, {
-      headers: { Authorization: token },
-    });
-    if (response.status === 200 || response.status === 201) {
+    try {
+      const response = await axios.put(`${USER_URL}/users`, update, {
+        headers: { Authorization: token },
+      });
+
+      console.log(response.data);
       return 'Usuario actualizado correctamente';
+    } catch (error) {
+      throw new BadGatewayException(error.response.data);
     }
-    throw new BadGatewayException(response.data);
   }
 }

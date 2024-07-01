@@ -7,6 +7,8 @@ import { ProductsModule } from './products/products.module';
 import { PaymentModule } from './payment/payment.module';
 import { ConfigModuleRoot } from './config/config.module';
 import { ConfigTypOrmModule } from './config/typeorm.module';
+import { PassportModule } from '@nestjs/passport';
+import { JwtConfigModule } from './config/jwt.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { ConfigTypOrmModule } from './config/typeorm.module';
     UsersModule,
     ProductsModule,
     PaymentModule,
+    PassportModule.register({ session: true }),
+    JwtConfigModule,
   ],
   controllers: [AppController],
   providers: [AppService],

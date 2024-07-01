@@ -9,6 +9,8 @@ import {
   PORT_REDIS,
   USERNAME_REDIS,
 } from 'src/config/env';
+import { GoogleStrategy } from './utils/GoogleStrategy';
+import { SessionSerializer } from './utils/serializer';
 
 @Module({
   imports: [
@@ -26,6 +28,6 @@ import {
     ]),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, GoogleStrategy, SessionSerializer],
 })
 export class AuthModule {}
