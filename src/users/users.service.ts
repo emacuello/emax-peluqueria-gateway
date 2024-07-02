@@ -23,11 +23,31 @@ export class UsersService {
     }
     try {
       const response = await axios.put(`${USER_URL}/users`, update, {
-        headers: { Authorization: token },
+        headers: { Authorization: `Bearer: ${token}` },
       });
 
       console.log(response.data);
       return 'Usuario actualizado correctamente';
+    } catch (error) {
+      throw new BadGatewayException(error.response.data);
+    }
+  }
+  async getAllUsers(token: string) {
+    try {
+      const response = await axios(`${USER_URL}/users`, {
+        headers: { Authorization: `Bearer: ${token}` },
+      });
+      return response.data;
+    } catch (error) {
+      throw new BadGatewayException(error.response.data);
+    }
+  }
+  async getToken(token: string) {
+    try {
+      const response = await axios(`${USER_URL}/users/token`, {
+        headers: { Authorization: `Bearer: ${token}` },
+      });
+      return response.data;
     } catch (error) {
       throw new BadGatewayException(error.response.data);
     }

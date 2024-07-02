@@ -6,6 +6,7 @@ import { MS_PAYMENT } from 'src/utils/nameMicroservices';
 import { HOST_REDIS, PASSWORD_REDIS, PORT_REDIS } from 'src/config/env';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Order } from './entities/payment.entity';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -21,6 +22,12 @@ import { Order } from './entities/payment.entity';
       },
     ]),
     TypeOrmModule.forFeature([Order]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 3,
+      },
+    ]),
   ],
   controllers: [PaymentController],
   providers: [PaymentService],

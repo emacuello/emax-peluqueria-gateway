@@ -10,17 +10,20 @@ import {
   BadRequestException,
   ParseUUIDPipe,
   Redirect,
+  UseGuards,
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { Response } from 'express';
 import { CANCEL_URL, SUCESS_URL } from 'src/config/env';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 @Controller('payment')
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
   @Post()
+  @UseGuards(ThrottlerGuard)
   create(
     @Body() createPaymentDto: CreatePaymentDto,
     @Headers('Authorization') auth: string,

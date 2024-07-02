@@ -1,4 +1,4 @@
-import { BadGatewayException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { LoginDto, RegisterDto } from './dto/create-auth.dto';
 import { MS_AUTH } from 'src/utils/nameMicroservices';
 import { ClientProxy } from '@nestjs/microservices';
@@ -19,10 +19,15 @@ export class AuthService {
       const response = await axios.post(
         `${USER_URL}/users/login`,
         createAuthDto,
+        {
+          headers: {
+            Authorization: `Bearer ${HEADERS_TOKEN}`,
+          },
+        },
       );
       return response.data;
     } catch (error) {
-      throw new BadGatewayException('Error al iniciar sesión');
+      throw new BadRequestException(error.response.data);
     }
   }
   async register(registerDto: RegisterDto) {
@@ -30,10 +35,15 @@ export class AuthService {
       const response = await axios.post(
         `${USER_URL}/users/register`,
         registerDto,
+        {
+          headers: {
+            Authorization: `Bearer ${HEADERS_TOKEN}`,
+          },
+        },
       );
       return response.data;
     } catch (error) {
-      throw new BadGatewayException('Error al registrar usuario');
+      throw new BadRequestException(error.response.data);
     }
   }
   async findUser(mail: string) {
@@ -71,7 +81,7 @@ export class AuthService {
       return this.jwtService.sign(payload);
     } catch (error) {
       const token = await this.googleRegister(userPayload);
-      if (!token) throw new BadGatewayException('Error al registrar usuario 2');
+      if (!token) throw new BadRequestException(error.response.data);
       return token;
     }
   }
@@ -95,7 +105,7 @@ export class AuthService {
       };
       return this.jwtService.sign(payload);
     } catch (error) {
-      throw new BadGatewayException('Error al crear usuario');
+      throw new BadRequestException(error.response.data);
     }
   }
 }

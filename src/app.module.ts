@@ -9,6 +9,7 @@ import { ConfigModuleRoot } from './config/config.module';
 import { ConfigTypOrmModule } from './config/typeorm.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtConfigModule } from './config/jwt.module';
+import { AppointmentsModule } from './appointments/appointments.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { JwtConfigModule } from './config/jwt.module';
     PaymentModule,
     PassportModule.register({ session: true }),
     JwtConfigModule,
+    AppointmentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

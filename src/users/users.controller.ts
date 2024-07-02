@@ -2,10 +2,12 @@ import {
   Body,
   Controller,
   FileTypeValidator,
+  Get,
   Headers,
   MaxFileSizeValidator,
   ParseFilePipe,
   Post,
+  UnauthorizedException,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -40,5 +42,21 @@ export class UsersController {
   ) {
     const currentUser = token?.split(' ')[1];
     return this.usersService.changeProfile(update, currentUser, file);
+  }
+
+  @Get()
+  getAllUsers(@Headers('Authorization') token: string) {
+    const currentUser = token?.split(' ')[1];
+    if (!currentUser) throw new UnauthorizedException('No tienes permisos');
+    return this.usersService.getAllUsers(currentUser);
+  }
+
+  @Get('token')
+  getToken(@Headers('Authorization') token: string) {
+    console.log(token);
+
+    const currentUser = token?.split(' ')[1];
+    if (!currentUser) throw new UnauthorizedException('No tienes permisos');
+    return this.usersService.getToken(currentUser);
   }
 }
