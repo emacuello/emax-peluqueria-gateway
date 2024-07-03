@@ -112,4 +112,66 @@ export class PaymentService {
     await this.orderRepository.delete(id);
     return 'cancelado';
   }
+
+  async sucessPayment(id: string) {
+    const order = await this.orderRepository.findOne({ where: { id } });
+    if (!order) throw new BadRequestException('No se encontro el pedido');
+    this.client.emit({ cmd: 'createMailPayment' }, { order });
+    return 'sucess';
+  }
+
+  mockmail() {
+    const orderMailMock1 = {
+      id: 'order1',
+      products: [
+        {
+          _id: 'product1',
+          name: 'Fidelite Máscara Argan Mythical x1000gr',
+          unitPrice: 10.99,
+          description:
+            'Es para todo tipo de cabellos. Está hecha a base de aceite virgen de Argán. Es un tratamiento anti-age que combate y retarda el envejecimiento capilar. Otorga hidratación profunda y nutrición intensa. Devuelve la vitalidad perdida al cabello proporcionando una textura ligera y un increíble brillo instantáneo.  Posee filtros UV y UVB que protegen al cabello de los rayos ultravioleta. Antifrizz.',
+          image: [
+            'https://res.cloudinary.com/dxrjz4ycj/image/upload/v1719160162/kflsdbl4p3xefwanpj3e.webp',
+            'image2.jpg',
+          ],
+          quantity: 2,
+          total: 21.98,
+          stock: 5,
+        },
+        {
+          _id: 'product2',
+          name: 'IDI Delineador Rebel Glam',
+          unitPrice: 15.49,
+          description:
+            'El delineador además de contener micro glitter con brillos efecto 3D, tiene una base transparente que ayuda que el brillo dure todo el día. Podes usarlo solo o complementarlo con cualquier sombra. Su pincel con punta fina permite una aplicación precisa y se puede usar para crear líneas de diferentes grosores. Vienen en 6 tonos que hacen que tu maquillaje se destaque por su estilo glam.',
+          image: [
+            'https://res.cloudinary.com/dxrjz4ycj/image/upload/v1719160493/donqmwvyrfh9bxhyxi1t.webp',
+            'https://res.cloudinary.com/dxrjz4ycj/image/upload/v1719160493/sxmm4awbaaxiamjtwnxl.webp',
+            'https://res.cloudinary.com/dxrjz4ycj/image/upload/v1719160494/focaxecetl7oxvzkoarg.webp',
+          ],
+          quantity: 1,
+          total: 15.49,
+          stock: 5,
+        },
+      ],
+      user: [
+        {
+          id: 1,
+          name: 'Emanuel',
+          email: 'ema.cuello1010@gmail.com',
+          birthdate: '1990-01-01',
+          nDni: 12345678,
+          role: 'customer',
+          socialUser: false,
+          appointment: [],
+        },
+      ],
+      price: 37.47,
+      createdAt: new Date('2023-01-01T12:00:00Z'),
+      updatedAt: new Date('2023-01-02T12:00:00Z'),
+    };
+    // const json = JSON.stringify(orderMailMock1);
+    this.client.emit({ cmd: 'createMailPayment' }, orderMailMock1);
+    return 'sucess';
+  }
 }

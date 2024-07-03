@@ -6,6 +6,7 @@ export interface Products {
   image: string[];
   quantity: number;
   total: number;
+  stock: number;
 }
 
 export interface User {
@@ -14,5 +15,7 @@ export interface User {
   email: string;
   birthdate: string;
   nDni: number;
-  username: string;
+  role: string;
+  socialUser: boolean;
+  appointment: any[];
 }

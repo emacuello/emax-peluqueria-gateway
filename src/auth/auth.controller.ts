@@ -29,6 +29,10 @@ export class AuthController {
   register(@Body() createAuthDto: RegisterDto) {
     return this.authService.register(createAuthDto);
   }
+  @Get('sendmail')
+  senmail() {
+    return this.authService.sendmail();
+  }
   @Get('google/login')
   @UseGuards(GoogleAuthGuard)
   handleLogin() {

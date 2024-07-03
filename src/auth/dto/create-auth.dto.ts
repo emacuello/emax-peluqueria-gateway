@@ -1,10 +1,11 @@
 import { PickType } from '@nestjs/mapped-types';
-import { IsNumber, IsString } from 'class-validator';
+import { IsEmail, IsNumber, IsString } from 'class-validator';
 
 export class RegisterDto {
   @IsString()
   name: string;
   @IsString()
+  @IsEmail()
   email: string;
   @IsString()
   birthdate: string;

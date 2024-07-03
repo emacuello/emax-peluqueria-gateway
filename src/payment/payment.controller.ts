@@ -46,8 +46,13 @@ export class PaymentController {
   @Get('sucess/:id')
   @Redirect()
   sucess(@Param('id') id: string) {
-    console.log(id);
+    const response = this.paymentService.sucessPayment(id);
+    if (!response) throw new BadRequestException('Ocurrio un error inesperado');
     const SUCCES_CHECK_URL = process.env.SUCCES_CHECK_URL;
     if (SUCCES_CHECK_URL) return { url: SUCESS_URL };
+  }
+  @Get('mockmail')
+  mockmail() {
+    return this.paymentService.mockmail();
   }
 }

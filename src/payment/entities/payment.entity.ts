@@ -1,4 +1,3 @@
-import { Product } from 'src/products/entities/product.entity';
 import {
   Column,
   CreateDateColumn,
@@ -6,6 +5,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Products, User } from '../types/interfaces';
 
 @Entity('orders')
 export class Order {
@@ -13,10 +13,10 @@ export class Order {
   id: string;
 
   @Column('text', { array: true })
-  products: Product[];
+  products: Products[];
 
   @Column('text', { array: true })
-  user: string[];
+  user: User[];
 
   @Column()
   price: number;

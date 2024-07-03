@@ -41,6 +41,10 @@ export class AuthService {
           },
         },
       );
+      this.authClient.emit('createMailWelcome', {
+        email: registerDto.email,
+        name: registerDto.name,
+      });
       return response.data;
     } catch (error) {
       throw new BadRequestException(error.response.data);
@@ -103,9 +107,27 @@ export class AuthService {
         role: axiosResponse.data.role,
         aud: axiosResponse.data.mail,
       };
+      this.authClient.emit(
+        { cmd: 'createMailWelcome' },
+        {
+          email: newUser.email,
+          name: newUser.name,
+        },
+      );
       return this.jwtService.sign(payload);
     } catch (error) {
       throw new BadRequestException(error.response.data);
     }
+  }
+  async sendmail() {
+    this.authClient.emit(
+      { cmd: 'createMailWelcome' },
+      {
+        email: 'ema.cuello1010@gmail.com',
+        name: 'Emanuel',
+      },
+    );
+
+    return 'Enviado';
   }
 }

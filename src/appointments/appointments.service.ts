@@ -1,11 +1,14 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import axios from 'axios';
 import { USER_URL } from 'src/config/env';
+import { MS_APPOINTMENT } from 'src/utils/nameMicroservices';
+import { ClientProxy } from '@nestjs/microservices';
 
 @Injectable()
 export class AppointmentsService {
+  constructor(@Inject(MS_APPOINTMENT) private client: ClientProxy) {}
   async create(createAppointmentDto: CreateAppointmentDto, token: string) {
     try {
       const response = await axios.post(
@@ -15,8 +18,11 @@ export class AppointmentsService {
           headers: { Authorization: `Bearer: ${token}` },
         },
       );
-
-      return response.data;
+      this.client.emit(
+        { cmd: 'createMailAppointment' },
+        { user: response.data.user, appointment: response.data.appointment },
+      );
+      return response.data.appointment;
     } catch (error) {
       throw new BadRequestException(error.response.data);
     }
@@ -58,7 +64,12 @@ export class AppointmentsService {
           headers: { Authorization: `Bearer: ${token}` },
         },
       );
-
+      this.client.emit(
+        { cmd: 'createMailAppointmentChange' },
+        {
+          appointment: response.data.appointment,
+        },
+      );
       return response.data;
     } catch (error) {
       throw new BadRequestException(error.response.data);
