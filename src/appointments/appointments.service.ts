@@ -20,9 +20,14 @@ export class AppointmentsService {
       );
       this.client.emit(
         { cmd: 'createMailAppointment' },
-        { user: response.data.user, appointment: response.data.appointment },
+        {
+          user: response.data.result.user,
+          appointment: response.data.result.appointment,
+        },
       );
-      return response.data.appointment;
+      console.log(response.data.result.appointment);
+
+      return response.data.result.appointment;
     } catch (error) {
       throw new BadRequestException(error.response.data);
     }
@@ -67,9 +72,11 @@ export class AppointmentsService {
       this.client.emit(
         { cmd: 'createMailAppointmentChange' },
         {
-          appointment: response.data.appointment,
+          appointment: response.data.result,
         },
       );
+      console.log(response.data);
+
       return response.data;
     } catch (error) {
       throw new BadRequestException(error.response.data);

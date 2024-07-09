@@ -1,12 +1,16 @@
 export interface Products {
-  id: string;
+  _id: string;
   name: string;
-  unitPrice: number;
+  price: number;
+  totalPrice: number;
   description: string;
   image: string[];
-  quantity: number;
-  total: number;
   stock: number;
+  offerprice: number;
+  offer: boolean;
+  quantity: number;
+  __v: number;
+  total: number;
 }
 
 export interface User {
@@ -18,4 +22,14 @@ export interface User {
   role: string;
   socialUser: boolean;
   appointment: any[];
+  serverPrincipal?: boolean;
+}
+
+export interface UpdateStocks {
+  products: ProductId[];
+}
+
+interface ProductId {
+  _id: string;
+  quantity: number;
 }

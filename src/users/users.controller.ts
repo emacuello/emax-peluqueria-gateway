@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   FileTypeValidator,
   Get,
   Headers,
@@ -21,14 +22,14 @@ export class UsersController {
 
   @Post('profile')
   @UseInterceptors(FileInterceptor('file'))
-  changeProfile(
+  async changeProfile(
     @Body() update: UpdateAuthDto,
     @Headers('Authorization') token: string,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
           new MaxFileSizeValidator({
-            maxSize: 1000000,
+            maxSize: 5000000,
             message: 'El archivo es demasiado grande',
           }),
           new FileTypeValidator({
@@ -41,22 +42,30 @@ export class UsersController {
     file?: Express.Multer.File,
   ) {
     const currentUser = token?.split(' ')[1];
-    return this.usersService.changeProfile(update, currentUser, file);
+
+    return await this.usersService.changeProfile(update, currentUser, file);
   }
 
   @Get()
-  getAllUsers(@Headers('Authorization') token: string) {
+  async getAllUsers(@Headers('Authorization') token: string) {
     const currentUser = token?.split(' ')[1];
     if (!currentUser) throw new UnauthorizedException('No tienes permisos');
-    return this.usersService.getAllUsers(currentUser);
+    return await this.usersService.getAllUsers(currentUser);
   }
 
   @Get('token')
-  getToken(@Headers('Authorization') token: string) {
+  async getToken(@Headers('Authorization') token: string) {
     console.log(token);
 
     const currentUser = token?.split(' ')[1];
     if (!currentUser) throw new UnauthorizedException('No tienes permisos');
-    return this.usersService.getToken(currentUser);
+    return await this.usersService.getToken(currentUser);
+  }
+
+  @Delete()
+  async deleteUser(@Headers('Authorization') token: string) {
+    const currentUser = token?.split(' ')[1];
+    if (!currentUser) throw new UnauthorizedException('No tienes permisos');
+    return await this.usersService.deleteUser(currentUser);
   }
 }

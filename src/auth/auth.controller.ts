@@ -6,9 +6,14 @@ import {
   UseGuards,
   Redirect,
   Req,
+  Headers,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterDto, LoginDto } from './dto/create-auth.dto';
+import {
+  RegisterDto,
+  LoginDto,
+  ChangePasswordDto,
+} from './dto/create-auth.dto';
 import { GoogleAuthGuard } from './guards/auth.guard';
 import { GOOGLE_REDIRECT_FRONT, LOGIN_URL } from 'src/config/env';
 import { GoogleStrategy } from './utils/GoogleStrategy';
@@ -21,17 +26,19 @@ export class AuthController {
     private googleStrategy: GoogleStrategy,
   ) {}
 
-  @Post()
-  login(@Body() createAuthDto: LoginDto) {
-    return this.authService.login(createAuthDto);
+  @Post('login')
+  async login(@Body() createAuthDto: LoginDto) {
+    console.log('createAuthDto', createAuthDto);
+
+    return await this.authService.serverLogin(createAuthDto);
   }
-  @Post()
-  register(@Body() createAuthDto: RegisterDto) {
-    return this.authService.register(createAuthDto);
+  @Post('register')
+  async register(@Body() createAuthDto: RegisterDto) {
+    return await this.authService.register(createAuthDto);
   }
   @Get('sendmail')
-  senmail() {
-    return this.authService.sendmail();
+  async senmail() {
+    return await this.authService.sendmail();
   }
   @Get('google/login')
   @UseGuards(GoogleAuthGuard)
@@ -49,6 +56,16 @@ export class AuthController {
     if (!createUser) {
       return { url: LOGIN_URL };
     }
+    console.log('createUser', createUser);
+
     return { url: `${GOOGLE_REDIRECT_FRONT}?token=${createUser}` };
+  }
+
+  @Post('changePassword')
+  async changePassword(
+    @Body() data: ChangePasswordDto,
+    @Headers('Authorization') token: string,
+  ) {
+    return await this.authService.changePassword(data, token);
   }
 }

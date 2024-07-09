@@ -17,37 +17,43 @@ export class AppointmentsController {
   constructor(private readonly appointmentsService: AppointmentsService) {}
 
   @Post()
-  create(
+  async create(
     @Body() createAppointmentDto: CreateAppointmentDto,
     @Headers('Authorization') token: string,
   ) {
     const currentUser = token?.split(' ')[1];
     if (!currentUser) throw new UnauthorizedException('No tienes permisos');
-    return this.appointmentsService.create(createAppointmentDto, currentUser);
+    return await this.appointmentsService.create(
+      createAppointmentDto,
+      currentUser,
+    );
   }
 
   @Get()
-  findAll(@Headers('Authorization') token: string) {
+  async findAll(@Headers('Authorization') token: string) {
     const currentUser = token?.split(' ')[1];
     if (!currentUser) throw new UnauthorizedException('No tienes permisos');
-    return this.appointmentsService.findAll(currentUser);
+    return await this.appointmentsService.findAll(currentUser);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @Headers('Authorization') token: string) {
+  async findOne(
+    @Param('id') id: string,
+    @Headers('Authorization') token: string,
+  ) {
     const currentUser = token?.split(' ')[1];
-    return this.appointmentsService.findOne(Number(id), currentUser);
+    return await this.appointmentsService.findOne(Number(id), currentUser);
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateAppointmentDto: UpdateAppointmentDto,
     @Headers('Authorization') token: string,
   ) {
     const currentUser = token?.split(' ')[1];
     if (!currentUser) throw new UnauthorizedException('No tienes permisos');
-    return this.appointmentsService.update(
+    return await this.appointmentsService.update(
       Number(id),
       updateAppointmentDto,
       currentUser,

@@ -24,35 +24,38 @@ export class PaymentController {
 
   @Post()
   @UseGuards(ThrottlerGuard)
-  create(
+  async create(
     @Body() createPaymentDto: CreatePaymentDto,
     @Headers('Authorization') auth: string,
     @Res() res: Response,
   ) {
     const token = auth.split(' ')[1];
     if (!token) throw new UnauthorizedException('No se encontro el token');
-    const url = this.paymentService.create(createPaymentDto, token);
+    const url = await this.paymentService.create(createPaymentDto, token);
     if (!url) throw new BadRequestException('No se pudo realizar el pago');
     return res.json({ url });
   }
 
   @Get('cancel/:id')
   @Redirect()
-  cancelPayment(@Param('id', ParseUUIDPipe) id: string) {
-    const response = this.paymentService.cancelPayment(id);
+  async cancelPayment(@Param('id', ParseUUIDPipe) id: string) {
+    const response = await this.paymentService.cancelPayment(id);
     if (!response) throw new BadRequestException('No se pudo realizar el pago');
-    return { url: CANCEL_URL };
+    return { url: `${CANCEL_URL}?id=${id}` };
   }
   @Get('sucess/:id')
   @Redirect()
-  sucess(@Param('id') id: string) {
-    const response = this.paymentService.sucessPayment(id);
+  async sucess(@Param('id') id: string) {
+    const response = await this.paymentService.sucessPayment(id);
     if (!response) throw new BadRequestException('Ocurrio un error inesperado');
-    const SUCCES_CHECK_URL = process.env.SUCCES_CHECK_URL;
-    if (SUCCES_CHECK_URL) return { url: SUCESS_URL };
+    return { url: `${SUCESS_URL}?id=${id}` };
   }
-  @Get('mockmail')
-  mockmail() {
-    return this.paymentService.mockmail();
+
+  @Get()
+  @UseGuards(ThrottlerGuard)
+  async getPayment(@Headers('Authorization') token: string) {
+    const currentUser = token?.split(' ')[1];
+    if (!currentUser) throw new UnauthorizedException('No tienes permisos');
+    return await this.paymentService.getPayment(currentUser);
   }
 }

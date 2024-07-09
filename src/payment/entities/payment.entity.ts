@@ -12,14 +12,17 @@ export class Order {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('text', { array: true })
+  @Column('jsonb')
   products: Products[];
 
-  @Column('text', { array: true })
-  user: User[];
+  @Column('jsonb')
+  user: User;
 
   @Column()
   price: number;
+
+  @Column({ default: 'Pendiente' })
+  status: string;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

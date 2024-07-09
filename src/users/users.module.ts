@@ -10,6 +10,10 @@ import {
   USERNAME_REDIS,
 } from 'src/config/env';
 import { FileUploadService } from './cloudinary.service';
+import { CloudinaryConfig } from 'src/config/cloudinary.config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Order } from 'src/payment/entities/payment.entity';
+import { Auth } from 'src/auth/entities/auth.entity';
 
 @Module({
   imports: [
@@ -25,8 +29,9 @@ import { FileUploadService } from './cloudinary.service';
         },
       },
     ]),
+    TypeOrmModule.forFeature([Auth, Order]),
   ],
   controllers: [UsersController],
-  providers: [UsersService, FileUploadService],
+  providers: [UsersService, FileUploadService, CloudinaryConfig],
 })
 export class UsersModule {}
