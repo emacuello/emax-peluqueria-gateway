@@ -4,7 +4,7 @@ import { UpdateAuthDto } from 'src/auth/dto/update-auth.dto';
 import { MS_USERS } from 'src/utils/nameMicroservices';
 import { FileUploadService } from './cloudinary.service';
 import axios from 'axios';
-import { USER_URL } from 'src/config/env';
+import { HEADERS_TOKEN, USER_URL } from 'src/config/env';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Auth } from 'src/auth/entities/auth.entity';
 import { Repository } from 'typeorm';
@@ -84,6 +84,22 @@ export class UsersService {
         await this.authRepository.delete({ email: response.data.email });
       }
       return 'Usuario eliminado';
+    } catch (error) {
+      throw new BadRequestException(error.response.data);
+    }
+  }
+  async getUsername() {
+    try {
+      const response = await axios(`${USER_URL}/users/username`, {
+        headers: { Authorization: `Bearer: ${HEADERS_TOKEN}` },
+      });
+      const usernames = await this.authRepository.find();
+      const notAvailableUsernames: string[] = response.data;
+      if (usernames?.length > 0) {
+        const usernamesServer = usernames.map((user) => user.username);
+        notAvailableUsernames.push(...usernamesServer);
+      }
+      return notAvailableUsernames;
     } catch (error) {
       throw new BadRequestException(error.response.data);
     }

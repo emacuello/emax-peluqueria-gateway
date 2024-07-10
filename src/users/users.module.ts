@@ -14,6 +14,7 @@ import { CloudinaryConfig } from 'src/config/cloudinary.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Order } from 'src/payment/entities/payment.entity';
 import { Auth } from 'src/auth/entities/auth.entity';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -30,6 +31,12 @@ import { Auth } from 'src/auth/entities/auth.entity';
       },
     ]),
     TypeOrmModule.forFeature([Auth, Order]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 5,
+      },
+    ]),
   ],
   controllers: [UsersController],
   providers: [UsersService, FileUploadService, CloudinaryConfig],

@@ -10,11 +10,13 @@ import {
   Post,
   UnauthorizedException,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateAuthDto } from 'src/auth/dto/update-auth.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 @Controller('users')
 export class UsersController {
@@ -52,7 +54,11 @@ export class UsersController {
     if (!currentUser) throw new UnauthorizedException('No tienes permisos');
     return await this.usersService.getAllUsers(currentUser);
   }
-
+  @Get('username')
+  @UseGuards(ThrottlerGuard)
+  async getUsername() {
+    return await this.usersService.getUsername();
+  }
   @Get('token')
   async getToken(@Headers('Authorization') token: string) {
     console.log(token);
