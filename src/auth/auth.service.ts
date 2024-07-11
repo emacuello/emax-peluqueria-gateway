@@ -7,7 +7,7 @@ import {
 import { MS_AUTH } from 'src/utils/nameMicroservices';
 import { ClientProxy } from '@nestjs/microservices';
 import axios from 'axios';
-import { HEADERS_TOKEN, SECRET_KEY, USER_URL } from 'src/config/env';
+import { HEADERS_TOKEN, USER_URL } from 'src/config/env';
 import { PayloadGoogleType } from './types/typesGoogle';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './types/payload.jwt';
@@ -15,7 +15,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Auth } from './entities/auth.entity';
 import { Repository } from 'typeorm';
-import { User } from 'src/payment/types/interfaces';
 
 @Injectable()
 export class AuthService {
@@ -161,87 +160,25 @@ export class AuthService {
       throw new BadRequestException(error.response.data.message);
     }
   }
-  async sendmail() {
-    this.authClient.emit(
-      { cmd: 'createMailWelcome' },
-      {
-        email: 'ema.cuello1010@gmail.com',
-        name: 'emacuello',
-      },
-    );
 
-    return 'Enviado';
-  }
   async changePassword(data: ChangePasswordDto, token: string) {
-    if (data.socialUser) {
-      const { oldPassword, newPassword } = data;
-      const tokenDecoded: JwtPayload = this.jwtService.verify(token, {
-        secret: SECRET_KEY,
-      });
-      const user = await this.authRepository.findOne({
-        where: {
-          email: tokenDecoded.aud,
-        },
-      });
-      if (!user) {
-        return await this.createUserServer(data, token);
-      }
-
-      const isValidPassword = await bcrypt.compare(oldPassword, user.password);
-      if (!isValidPassword) {
-        throw new BadRequestException('Las contraseñas no coinciden');
-      }
-
-      user.password = await bcrypt.hash(newPassword, 10);
-      await this.authRepository.save(user);
-      return { message: 'Contraseña actualizada' };
-    } else {
-      try {
-        const { oldPassword, newPassword } = data;
-        const response = await axios.put(
-          `${USER_URL}/users/changePassword`,
-          {
-            oldPassword,
-            newPassword,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          },
-        );
-        return response.data;
-      } catch (error) {
-        throw new BadRequestException(error.response.data.message);
-      }
-    }
-  }
-
-  async createUserServer(data: ChangePasswordDto, token: string) {
-    const { newPassword, username } = data;
     try {
-      const response = await axios(`${USER_URL}/users/token`, {
-        headers: { Authorization: `Bearer: ${token}` },
-      });
-      const user = response.data as User;
-      const createUserServer = await this.authRepository.save({
-        username,
-        password: await bcrypt.hash(newPassword, 10),
-        email: user.email,
-        role: user.role,
-      });
-      if (!createUserServer)
-        throw new BadRequestException('Error al crear el usuario');
-      await axios.put(
-        `${USER_URL}/users`,
-        { serverPrincipal: true },
+      const { oldPassword, newPassword } = data;
+      const response = await axios.put(
+        `${USER_URL}/users/changePassword`,
         {
-          headers: { Authorization: `Bearer: ${token}` },
+          oldPassword,
+          newPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
       );
-      return { message: 'Contraseña actualizada' };
+      return response.data;
     } catch (error) {
-      throw new BadRequestException(error.response.data.message);
+      throw new BadRequestException(error.response);
     }
   }
 }

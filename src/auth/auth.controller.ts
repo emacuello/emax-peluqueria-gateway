@@ -7,6 +7,8 @@ import {
   Redirect,
   Req,
   Headers,
+  Put,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
@@ -36,10 +38,7 @@ export class AuthController {
   async register(@Body() createAuthDto: RegisterDto) {
     return await this.authService.register(createAuthDto);
   }
-  @Get('sendmail')
-  async senmail() {
-    return await this.authService.sendmail();
-  }
+
   @Get('google/login')
   @UseGuards(GoogleAuthGuard)
   handleLogin() {
@@ -61,11 +60,13 @@ export class AuthController {
     return { url: `${GOOGLE_REDIRECT_FRONT}?token=${createUser}` };
   }
 
-  @Post('changePassword')
+  @Put('changePassword')
   async changePassword(
     @Body() data: ChangePasswordDto,
-    @Headers('Authorization') token: string,
+    @Headers('Authorization') auth: string,
   ) {
+    const token = auth.split(' ')[1];
+    if (!token) throw new UnauthorizedException('No se encontro el token');
     return await this.authService.changePassword(data, token);
   }
 }

@@ -8,6 +8,7 @@ export class ProductsController {
   async findAll() {
     return await this.productsService.findAll();
   }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     console.log(id);

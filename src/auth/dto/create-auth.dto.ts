@@ -2,7 +2,6 @@ import { BadRequestException } from '@nestjs/common';
 import { PickType } from '@nestjs/mapped-types';
 import { Transform } from 'class-transformer';
 import {
-  IsBoolean,
   IsEmail,
   IsNotEmpty,
   IsNumber,
@@ -84,9 +83,4 @@ export class ChangePasswordDto {
   @IsString()
   @Validate(ComparePassword, ['newPassword'])
   confirmPassword: string;
-  @IsBoolean()
-  socialUser: boolean;
-  @IsOptional()
-  @IsString()
-  username: string;
 }

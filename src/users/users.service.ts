@@ -31,7 +31,7 @@ export class UsersService {
       const response = await axios.put(`${USER_URL}/users`, update, {
         headers: { Authorization: `Bearer: ${token}` },
       });
-      console.log(response.data);
+      console.log('RESPONSE', response.data);
       return response.data;
     } catch (error) {
       throw new BadRequestException(error.response.data);
