@@ -53,6 +53,31 @@ Para probar el Api Gateway es necesario crear un `.env` en la raíz del proyecto
 
 ## Descripción
 
-**[Documentación](https://api-emax-peluqueria.vercel.app/api)**
+**[Documentación Swagger](https://api-emax-peluqueria.vercel.app/api)**
 
 El Api Gateway está construido en NestJS y Typescript, se comunica directamente con 3 de los 4 microservicios, lo hace mediante peticiones HTTP y publicando eventos en Redis, además, también cuenta con un modulo de Payment que es el encargado de procesar los pagos del Ecommerce, además de comunicarse con los distintos microservicios y almacenar la información de los pagos, también se encarga del procesamiento de la autenticación con Google y de emitir los tokens para estos usuarios. El proceso de pago se realiza mediante Stripe. Al ser el punto de comunicación con el frontend, se encarga de todas las validaciones de los datos entrantes con ClassValidator y ClassTransformer, también tiene implementado rate limit en algunas rutas para evitar el abuso en las peticiones no deseadas, además se encarga de subir las imagenes de perfil de los usuario usando Cloudinary sus datos son alojados en una base de datos PostgreSQL en conjunto con TypeORM. El Api Gateway se encuentra alojado en Vercel y su base de datos se aloja en Supabase.
+
+## Instalación
+
+```bash
+$ npm install
+```
+
+## Correr la aplicación
+
+```bash
+# development
+$ npm run start
+
+# watch mode
+$ npm run start:dev
+
+# production mode
+$ npm run start:prod
+```
+
+## Contáctame
+
+- Autor - [Victor Emanuel Cuello](https://github.com/emacuello)
+- Portafolio - [https://emacuello-portafolio.vercel.app/](https://emacuello-portafolio.vercel.app/)
+- Linkedin - [in/vcuellojrs](https://www.linkedin.com/in/vcuellojrs/)
