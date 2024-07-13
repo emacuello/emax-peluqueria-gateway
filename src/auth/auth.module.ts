@@ -11,8 +11,6 @@ import {
 } from 'src/config/env';
 import { GoogleStrategy } from './utils/GoogleStrategy';
 import { SessionSerializer } from './utils/serializer';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Auth } from './entities/auth.entity';
 
 @Module({
   imports: [
@@ -28,7 +26,6 @@ import { Auth } from './entities/auth.entity';
         },
       },
     ]),
-    TypeOrmModule.forFeature([Auth]),
   ],
   controllers: [AuthController],
   providers: [AuthService, GoogleStrategy, SessionSerializer],

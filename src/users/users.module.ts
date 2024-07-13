@@ -13,7 +13,6 @@ import { FileUploadService } from './cloudinary.service';
 import { CloudinaryConfig } from 'src/config/cloudinary.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Order } from 'src/payment/entities/payment.entity';
-import { Auth } from 'src/auth/entities/auth.entity';
 import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
@@ -30,7 +29,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
         },
       },
     ]),
-    TypeOrmModule.forFeature([Auth, Order]),
+    TypeOrmModule.forFeature([Order]),
     ThrottlerModule.forRoot([
       {
         ttl: 60000,

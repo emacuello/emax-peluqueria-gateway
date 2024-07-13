@@ -32,7 +32,7 @@ export class AuthController {
   async login(@Body() createAuthDto: LoginDto) {
     console.log('createAuthDto', createAuthDto);
 
-    return await this.authService.serverLogin(createAuthDto);
+    return await this.authService.login(createAuthDto);
   }
   @Post('register')
   async register(@Body() createAuthDto: RegisterDto) {

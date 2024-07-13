@@ -11,46 +11,14 @@ import { HEADERS_TOKEN, USER_URL } from 'src/config/env';
 import { PayloadGoogleType } from './types/typesGoogle';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './types/payload.jwt';
-import { InjectRepository } from '@nestjs/typeorm';
-import * as bcrypt from 'bcrypt';
-import { Auth } from './entities/auth.entity';
-import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
   constructor(
     @Inject(MS_AUTH) private authClient: ClientProxy,
     private jwtService: JwtService,
-    @InjectRepository(Auth) private authRepository: Repository<Auth>,
   ) {}
 
-  async serverLogin(createAuthDto: LoginDto) {
-    const user = await this.authRepository.findOneBy({
-      username: createAuthDto.username,
-    });
-    console.log('USER encontrado en server o no?', user);
-
-    if (!user) {
-      console.log('entroooo');
-
-      return await this.login(createAuthDto);
-    }
-    const comparePassword = await bcrypt.compare(
-      createAuthDto.password,
-      user.password,
-    );
-    if (!comparePassword)
-      throw new BadRequestException('Credenciales inválidas');
-
-    const payload: JwtPayload = {
-      sub: user.id,
-      role: user.role,
-      aud: user.email,
-    };
-    const token = this.jwtService.sign(payload);
-    if (!token) throw new BadRequestException('Credenciales inválidas');
-    return token;
-  }
   async login(createAuthDto: LoginDto) {
     try {
       const response = await axios.post(
@@ -62,7 +30,6 @@ export class AuthService {
           },
         },
       );
-      console.log('si entro entonces el problema es express');
 
       return response.data;
     } catch (error) {

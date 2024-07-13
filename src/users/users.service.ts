@@ -6,7 +6,6 @@ import { FileUploadService } from './cloudinary.service';
 import axios from 'axios';
 import { HEADERS_TOKEN, USER_URL } from 'src/config/env';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Auth } from 'src/auth/entities/auth.entity';
 import { Repository } from 'typeorm';
 import { Order } from 'src/payment/entities/payment.entity';
 
@@ -15,7 +14,6 @@ export class UsersService {
   constructor(
     @Inject(MS_USERS) private client: ClientProxy,
     private fileUploadService: FileUploadService,
-    @InjectRepository(Auth) private authRepository: Repository<Auth>,
     @InjectRepository(Order) private paymentRepository: Repository<Order>,
   ) {}
   async changeProfile(
@@ -80,9 +78,7 @@ export class UsersService {
           }
         })
         .catch((err) => console.log(err));
-      if (response.data.serverPrincipal) {
-        await this.authRepository.delete({ email: response.data.email });
-      }
+
       return 'Usuario eliminado';
     } catch (error) {
       throw new BadRequestException(error.response.data);
@@ -93,12 +89,9 @@ export class UsersService {
       const response = await axios(`${USER_URL}/users/username`, {
         headers: { Authorization: `Bearer: ${HEADERS_TOKEN}` },
       });
-      const usernames = await this.authRepository.find();
+
       const notAvailableUsernames: string[] = response.data;
-      if (usernames?.length > 0) {
-        const usernamesServer = usernames.map((user) => user.username);
-        notAvailableUsernames.push(...usernamesServer);
-      }
+
       return notAvailableUsernames;
     } catch (error) {
       throw new BadRequestException(error.response.data);
