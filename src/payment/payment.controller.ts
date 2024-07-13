@@ -17,12 +17,15 @@ import { CreatePaymentDto } from './dto/create-payment.dto';
 import { Response } from 'express';
 import { CANCEL_URL, SUCESS_URL } from 'src/config/env';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Payment')
 @Controller('payment')
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
   @Post()
+  @ApiBearerAuth()
   @UseGuards(ThrottlerGuard)
   async create(
     @Body() createPaymentDto: CreatePaymentDto,
@@ -45,13 +48,14 @@ export class PaymentController {
   }
   @Get('sucess/:id')
   @Redirect()
-  async sucess(@Param('id') id: string) {
+  async sucess(@Param('id', ParseUUIDPipe) id: string) {
     const response = await this.paymentService.sucessPayment(id);
     if (!response) throw new BadRequestException('Ocurrio un error inesperado');
     return { url: `${SUCESS_URL}?id=${id}` };
   }
 
   @Get()
+  @ApiBearerAuth()
   @UseGuards(ThrottlerGuard)
   async getPayment(@Headers('Authorization') token: string) {
     const currentUser = token?.split(' ')[1];

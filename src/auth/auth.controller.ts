@@ -20,7 +20,9 @@ import { GoogleAuthGuard } from './guards/auth.guard';
 import { GOOGLE_REDIRECT_FRONT, LOGIN_URL } from 'src/config/env';
 import { GoogleStrategy } from './utils/GoogleStrategy';
 import { ReqUser } from './types/typesGoogle';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -61,6 +63,7 @@ export class AuthController {
   }
 
   @Put('changePassword')
+  @ApiBearerAuth()
   async changePassword(
     @Body() data: ChangePasswordDto,
     @Headers('Authorization') auth: string,

@@ -17,12 +17,29 @@ import { UsersService } from './users.service';
 import { UpdateAuthDto } from 'src/auth/dto/update-auth.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('profile')
+  @UseGuards(ThrottlerGuard)
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    required: true,
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   @UseInterceptors(FileInterceptor('file'))
   async changeProfile(
     @Body() update: UpdateAuthDto,
@@ -49,6 +66,7 @@ export class UsersController {
   }
 
   @Get()
+  @ApiBearerAuth()
   async getAllUsers(@Headers('Authorization') token: string) {
     const currentUser = token?.split(' ')[1];
     if (!currentUser) throw new UnauthorizedException('No tienes permisos');

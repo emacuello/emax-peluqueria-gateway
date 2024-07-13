@@ -11,12 +11,14 @@ import {
 import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
-
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+@ApiTags('Appointments')
 @Controller('appointments')
 export class AppointmentsController {
   constructor(private readonly appointmentsService: AppointmentsService) {}
 
   @Post()
+  @ApiBearerAuth()
   async create(
     @Body() createAppointmentDto: CreateAppointmentDto,
     @Headers('Authorization') token: string,
@@ -30,6 +32,7 @@ export class AppointmentsController {
   }
 
   @Get()
+  @ApiBearerAuth()
   async findAll(@Headers('Authorization') token: string) {
     const currentUser = token?.split(' ')[1];
     if (!currentUser) throw new UnauthorizedException('No tienes permisos');
@@ -37,6 +40,7 @@ export class AppointmentsController {
   }
 
   @Get(':id')
+  @ApiBearerAuth()
   async findOne(
     @Param('id') id: string,
     @Headers('Authorization') token: string,
@@ -46,6 +50,7 @@ export class AppointmentsController {
   }
 
   @Put(':id')
+  @ApiBearerAuth()
   async update(
     @Param('id') id: string,
     @Body() updateAppointmentDto: UpdateAppointmentDto,
